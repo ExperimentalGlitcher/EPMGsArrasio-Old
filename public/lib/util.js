@@ -136,6 +136,7 @@ const util = {
             mainMockup = global.mockups[firstIndex],
             guns = [],
             turrets = [],
+            props = [],
             name = "",
             upgradeTooltip = "",
             rerootUpgradeTree = [],
@@ -148,6 +149,7 @@ const util = {
             let mockup = global.mockups[parseInt(i)];
             guns.push(...mockup.guns);
             turrets.push(...mockup.turrets);
+            props.push(...mockup.props);
             name += mockup.name.length > 0 ? "-" + mockup.name : "";
             upgradeTooltip += mockup.upgradeTooltip ? "\n" + mockup.upgradeTooltip : "";
             if (mockup.rerootUpgradeTree) allRoots.push(...mockup.rerootUpgradeTree.split("\\/"));
@@ -242,6 +244,9 @@ const util = {
                 o.mirrorMasterAngle = t.mirrorMasterAngle;
                 return o;
             }),
+            props: {
+                length: props.length,
+            },
         };
     },
 }
