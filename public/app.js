@@ -779,6 +779,107 @@ function drawTrapezoid(context, x, y, length, height, aspect, angle, borderless,
     if (fill) context.fill();
     context.globalAlpha = 1;
 }
+const drawProp = (() => {
+    function fixRot(xx, yy, p, rot, x, y) {
+        let actualAngle = (p.rpm == null ? rot : 0) + p.angle;
+        return [
+            x * Math.cos(actualAngle) - y * Math.sin(actualAngle) + xx,
+            x * Math.sin(actualAngle) + y * Math.cos(actualAngle) + yy
+        ];
+    }
+
+    function pointInit(drawSize, m, p, scaleInit, angle) {
+        let scaleConstant = scaleInit * drawSize / m.size * m.realSize * p.size;
+        return [
+            scaleConstant * (p.x / p.size + Math.cos(angle)),
+            scaleConstant * (p.y / p.size + Math.sin(angle))
+        ]
+    }
+
+    function drawPropPoints(context, xx, yy, rot, drawSize, m, p, scale, theta, c1, c2) {
+        let pxy = pointInit(drawSize, m, p, scale, theta);
+
+        if (c2 != undefined) {
+            context.bezierCurveTo(
+                ...fixRot(xx, yy, p, rot, ...c1),
+                ...fixRot(xx, yy, p, rot, ...c2),
+                ...fixRot(xx, yy, p, rot, ...pxy)
+            );
+        } else if (c1 != undefined) {
+            context.quadraticCurveTo(
+                ...fixRot(xx, yy, p, rot, ...pointInit(drawSize, m, p, ...c1)),
+                ...fixRot(xx, yy, p, rot, ...pxy)
+            );
+        } else context.lineTo(...fixRot(xx, yy, p, rot, ...pxy));
+    }
+
+    return function (context, p, pColor, rot, xx, yy, drawSize, m, source) {
+        context.beginPath();
+        let rpmAngle = (Date.now() * (p.rpm || 0) / 1000) % (2 * Math.PI);
+
+        switch (typeof p.shape) {
+            case 'object':
+                for (let [x, y, cx1, cy1, cx2, cy2] of p.shape) {
+                    drawPropPoints(context, xx, yy, rot, drawSize, m,
+                        p, Math.hypot(x, y), Math.atan2(x, y) + rpmAngle,
+                        cx1 == undefined ? undefined : [Math.hypot(cx1, cy1), Math.atan2(cx1, cy1)],
+                        cx2 == undefined ? undefined : [Math.hypot(cx2, cy2), Math.atan2(cx2, cy2)]
+                    );
+                }
+                break;
+            case 'number':
+                if (p.shape > 0) {
+                    for (let i = 0; i < p.shape; i++) drawPropPoints(context, xx, yy, rot, drawSize, m, p, 1, 2 * Math.PI / p.shape * i + Math.PI / p.shape + rpmAngle);
+                } else if (p.shape < 0) {
+                    let scale = drawSize / m.size * m.realSize * p.size,
+                        dip = p.dip - 6 / p.shape / p.shape;
+
+                    for (let i = 0; i < -p.shape + 1; i++) {
+                        let theta = -(i + 1) / p.shape * 2 * Math.PI,
+                            htheta = -(i + .5) / p.shape * 2 * Math.PI;
+                        context.quadraticCurveTo(
+                            ...fixRot(p.x+xx, p.y+yy, p, rot,
+                                scale * dip * Math.cos(htheta + rpmAngle),
+                                scale * dip * Math.sin(htheta + rpmAngle)
+                            ),
+                            ...fixRot(p.x+xx, p.y+yy, p, rot,
+                                scale * Math.cos(theta + rpmAngle),
+                                scale * Math.sin(theta + rpmAngle)
+                            )
+                        );
+                    }
+                } else {
+                    context.arc(p.x + xx, p.y + yy, drawSize / m.size * m.realSize * p.size,
+                        rpmAngle + p.angle,
+                        2 * Math.PI * p.arclen + rpmAngle + p.angle,
+                        false
+                    );
+                    if (p.ring != undefined) context.arc(p.x + xx, p.y + yy, drawSize / m.size * m.realSize * p.size * p.ring,
+                        2 * Math.PI * p.arclen + rpmAngle + p.angle,
+                        rpmAngle + p.angle,
+                        true
+                    );
+                    if (p.isAura) {
+                        let fillGradiant = ctx.createRadialGradient(
+                            p.x + xx, p.y + yy, 0,
+                            p.x + xx, p.y + yy, drawSize / m.size * m.realSize * p.size
+                        );
+                        fillGradiant.addColorStop(0, pColor);
+                        fillGradiant.addColorStop(1, `${pColor}00`);
+                        context.fillStyle = fillGradiant;
+                    }
+                }
+                break;
+        }
+        if (p.loop) context.closePath();
+        if (!p.fill) context.lineWidth /= 2
+        if (!p.isAura) context.stroke();
+        if (!p.fill) context.lineWidth *= 2;
+        if (p.fill) context.fill();
+        context.globalAlpha = 1;
+        context.lineJoin = "round";
+    }
+})();
 const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, lineWidthMult = 1, rot = 0, turretsObeyRot = false, assignedContext = false, turretInfo = false, render = instance.render) => {
     let context = assignedContext ? assignedContext : ctx;
     let fade = turretInfo ? 1 : render.status.getFade(),
@@ -805,6 +906,17 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     context.lineJoin = "round";
     context.lineWidth = initStrokeWidth
 
+    if (m.props.length) {
+        for (let i = 0; i < m.props.length; i++) {
+            let origM = JSON.parse(JSON.stringify(m))
+            let p = m.props[i];
+            let pColor = /*mixColors(*/getColor(p.color == -1 ? instance.color : p.color);/*, renderColor, renderBlend);*/
+            setColors(context, pColor);
+
+            if (p.layer === -2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
+            m = origM
+        }
+    }
     let upperTurretsIndex = source.turrets.length;
     // Draw turrets beneath us
     for (let i = 0; i < source.turrets.length; i++) {
@@ -830,6 +942,16 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         }
         drawEntity(baseColor, xx + len * Math.cos(ang), yy + len * Math.sin(ang), t, ratio, 1, (drawSize / ratio / t.size) * t.sizeFactor, lineWidthMult, facing, turretsObeyRot, context, t, render);
     }
+    if (m.props.length) {
+        for (let i = 0; i < m.props.length; i++) {
+            let origM = JSON.parse(JSON.stringify(m))
+            let p = m.props[i]; 
+            let pColor = /*mixColors(*/getColor(p.color == -1 ? instance.color : p.color);/*, renderColor, renderBlend);*/
+            setColors(context, pColor);
+            if (p.layer === -1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
+            m = origM
+        }
+    }
     // Draw guns below us
     let positions = source.guns.getPositions(),
         gunConfig = source.guns.getConfig();
@@ -846,6 +968,16 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
                 fill = g.drawFill;
             gameDraw.setColor(context, gameDraw.mixColors(gunColor, render.status.getColor(), blend));
             drawTrapezoid(context, xx + drawSize * gx, yy + drawSize * gy, drawSize * g.length / 2, drawSize * g.width / 2, g.aspect, g.angle + rot, borderless, fill, alpha, strokeWidth, drawSize * positions[i]);
+        }
+    }
+    if (m.props.length) {
+        for (let i = 0; i < m.props.length; i++) {
+            let origM = JSON.parse(JSON.stringify(m))
+            let p = m.props[i];
+            let pColor = mixColors(getColor(p.color == -1 ? instance.color : p.color), renderColor, renderBlend);
+            setColors(context, pColor);
+            if (p.layer === 0) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
+            m = origM
         }
     }
     // Draw body
@@ -874,7 +1006,17 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     context.shadowOffsetY = 0;
 
     drawPoly(context, xx, yy, (drawSize / m.size) * m.realSize, m.shape, rot, instance.borderless, instance.drawFill, m.imageInterpolation);
-    
+
+    if (m.props.length) {
+        for (let i = 0; i < m.props.length; i++) {
+            let origM = JSON.parse(JSON.stringify(m))
+            let p = m.props[i];
+            let pColor = mixColors(getColor(p.color == -1 ? instance.color : p.color), renderColor, renderBlend);
+            setColors(context, pColor);
+            if (p.layer === 1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
+            m = origM
+        }
+    }
     // Draw guns above us
     for (let i = 0; i < source.guns.length; i++) {
         context.lineWidth = initStrokeWidth
@@ -907,6 +1049,16 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
             facing = t.lerpedFacing;
         }
         drawEntity(baseColor, xx + len * Math.cos(ang), yy + len * Math.sin(ang), t, ratio, 1, (drawSize / ratio / t.size) * t.sizeFactor, lineWidthMult, facing, turretsObeyRot, context, t, render);
+    }
+    if (m.props.length) {
+        for (let i = 0; i < m.props.length; i++) {
+            let origM = JSON.parse(JSON.stringify(m))
+            let p = m.props[i];
+            let pColor = mixColors(getColor(p.color == -1 ? instance.color : p.color), renderColor, renderBlend);
+            setColors(context, pColor);
+            if (p.layer === 2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
+            m = origM
+        }
     }
     if (assignedContext == false && context != ctx && context.canvas.width > 0 && context.canvas.height > 0) {
         ctx.save();
