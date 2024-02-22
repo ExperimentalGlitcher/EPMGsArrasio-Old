@@ -524,6 +524,8 @@ const process = (z = {}) => {
                 status: Status(),
                 health: util.Smoothbar(z.health, 0.5, 5, .15),
                 shield: util.Smoothbar(z.shield, 0.5, 5, .15),
+                size: 1,
+                extra: [1, 0], // for props
             };
         }
         if (invuln) {
