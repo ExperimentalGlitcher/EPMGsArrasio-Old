@@ -175,6 +175,8 @@ const util = {
             glow: mainMockup.glow,
             render: {
                 status: {
+                    size: mainMockup.size,
+                    extra: [1.75, 0],
                     getFade: () => {
                         return 1;
                     },
