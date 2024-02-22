@@ -906,13 +906,12 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     context.lineJoin = "round";
     context.lineWidth = initStrokeWidth
 
-    if (m.props.length) {
-        for (let i = 0; i < m.props.length; i++) {
+    if (source.props.length) {
+        for (let i = 0; i < source.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
-            let p = m.props[i];
+            let p = source.props[i];
             let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
             gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
-
             if (p.layer === -2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
             m = origM
         }
@@ -942,10 +941,10 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         }
         drawEntity(baseColor, xx + len * Math.cos(ang), yy + len * Math.sin(ang), t, ratio, 1, (drawSize / ratio / t.size) * t.sizeFactor, lineWidthMult, facing, turretsObeyRot, context, t, render);
     }
-    if (m.props.length) {
-        for (let i = 0; i < m.props.length; i++) {
+    if (source.props.length) {
+        for (let i = 0; i < source.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
-            let p = m.props[i]; 
+            let p = source.props[i];
             let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
             gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
             if (p.layer === -1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
@@ -970,10 +969,10 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
             drawTrapezoid(context, xx + drawSize * gx, yy + drawSize * gy, drawSize * g.length / 2, drawSize * g.width / 2, g.aspect, g.angle + rot, borderless, fill, alpha, strokeWidth, drawSize * positions[i]);
         }
     }
-    if (m.props.length) {
-        for (let i = 0; i < m.props.length; i++) {
+    if (source.props.length) {
+        for (let i = 0; i < source.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
-            let p = m.props[i];
+            let p = source.props[i];
             let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
             gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
             if (p.layer === 0) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
@@ -1007,10 +1006,10 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
 
     drawPoly(context, xx, yy, (drawSize / m.size) * m.realSize, m.shape, rot, instance.borderless, instance.drawFill, m.imageInterpolation);
 
-    if (m.props.length) {
-        for (let i = 0; i < m.props.length; i++) {
+    if (source.props.length) {
+        for (let i = 0; i < source.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
-            let p = m.props[i];
+            let p = source.props[i];
             let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
             gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
             if (p.layer === 1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
@@ -1050,10 +1049,10 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         }
         drawEntity(baseColor, xx + len * Math.cos(ang), yy + len * Math.sin(ang), t, ratio, 1, (drawSize / ratio / t.size) * t.sizeFactor, lineWidthMult, facing, turretsObeyRot, context, t, render);
     }
-    if (m.props.length) {
-        for (let i = 0; i < m.props.length; i++) {
+    if (source.props.length) {
+        for (let i = 0; i < source.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
-            let p = m.props[i];
+            let p = source.props[i];
             let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
             gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
             if (p.layer === 2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
