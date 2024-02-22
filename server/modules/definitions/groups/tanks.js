@@ -4,6 +4,27 @@ require('./generics.js');
 const g = require('../gunvals.js');
 
 // Bullets
+Class.magnetBullet = {
+    PARENT: "bullet",
+    ON: [{
+        event: "tick",
+        handler: ({ body }) => {
+            for (let i = 0; i < entities.length; i++) {
+                let entity = entities[i];
+                if (entity.pushability > 0 && entity.master.master.id != body.id) {
+                    let diffX = entity.x - body.x,
+                        diffY = entity.y - body.y,
+                        dist2 = diffX ** 2 + diffY ** 2;
+                    if (dist2 < 750 ** 2) {
+                        let force = 100 * entity.pushability / Math.max(1000, dist2);
+                        entity.velocity.x -= diffX * force;
+                        entity.velocity.y -= diffY * force;
+                    }
+                }
+            }
+        }
+    }]
+}
 Class.splitterBullet = {
     PARENT: "bullet",
     INDEPENDENT: true,
@@ -3941,13 +3962,12 @@ Class.undertow = {
     PARENT: "genericTank",
     LABEL: "Undertow",
     DANGER: 6,
-    TOOLTIP: "[DEV NOTE] The Undertow does not function as intended yet!",
     GUNS: [
         {
             POSITION: [14, 12, 0.8, 0, 0, 0, 0],
             PROPERTIES: {
                 SHOOT_SETTINGS: combineStats([g.basic, g.desmos, { reload: 1.2 }]),
-                TYPE: "bullet"
+                TYPE: "magnetBullet"
             }
         },
         {
@@ -4116,7 +4136,6 @@ Class.riptide = {
     PARENT: "genericTank",
     LABEL: "Riptide",
     DANGER: 7,
-    TOOLTIP: "[DEV NOTE] The Riptide does not function as intended yet!",
     GUNS: [
         {
             POSITION: [6.5, 23.5, 0.25, 3, 0, 180, 0],
@@ -4125,7 +4144,7 @@ Class.riptide = {
             POSITION: [18, 16, 0.75, 0, 0, 0, 0],
             PROPERTIES: {
                 SHOOT_SETTINGS: combineStats([g.basic, g.desmos, { size: 0.9, reload: 1.2 }]),
-                TYPE: "bullet"
+                TYPE: "magnetBullet"
             }
         },
         {
