@@ -910,7 +910,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         for (let i = 0; i < m.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
             let p = m.props[i];
-            let pColor = /*mixColors(*/getColor(p.color == -1 ? instance.color : p.color);/*, renderColor, renderBlend);*/
+            let pColor = gameDraw.getColor(p.color == -1 ? instance.color : p.color);
             setColors(context, pColor);
 
             if (p.layer === -2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
@@ -946,7 +946,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         for (let i = 0; i < m.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
             let p = m.props[i]; 
-            let pColor = /*mixColors(*/getColor(p.color == -1 ? instance.color : p.color);/*, renderColor, renderBlend);*/
+            let pColor = gameDraw.getColor(p.color == -1 ? instance.color : p.color);
             setColors(context, pColor);
             if (p.layer === -1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
             m = origM
@@ -974,7 +974,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
         for (let i = 0; i < m.props.length; i++) {
             let origM = JSON.parse(JSON.stringify(m))
             let p = m.props[i];
-            let pColor = mixColors(getColor(p.color == -1 ? instance.color : p.color), renderColor, renderBlend);
+            let pColor = gameDraw.mixColors(gameDraw.getColor(p.color == -1 ? instance.color : p.color), renderColor, renderBlend);
             setColors(context, pColor);
             if (p.layer === 0) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
             m = origM
