@@ -59,6 +59,25 @@ function getMockup(e, positionInfo) {
             out.angle = rounder(t.bound.angle);
             return out;
         }),
+        props: e.props.map(function(p) {
+            return {
+                size: rounder(p.size),
+                x: rounder(p.x),
+                y: rounder(p.y),
+                angle: rounder(p.angle),
+                layer: rounder(p.layer),
+                color: rounder(p.color),
+                shape: p.shape,
+                fill: p.fill,
+                loop: p.loop,
+                isAura: p.isAura,
+                rpm: p.rpm,
+                specific: p.specific,
+                dip: p.dip,
+                ring: p.ring,
+                arclen: p.arclen
+            };
+        }),
     };
 }
 
