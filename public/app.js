@@ -909,7 +909,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     for (let i = 0; i < m.props.length; i++) {
         let origM = JSON.parse(JSON.stringify(m))
         let p = m.props[i];
-        let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
+        let pColor = p.color == null ? -1 : p.color;
         gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
         if (p.layer === -2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
         m = origM
@@ -942,7 +942,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     for (let i = 0; i < m.props.length; i++) {
         let origM = JSON.parse(JSON.stringify(m))
         let p = m.props[i];
-        let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
+        let pColor = p.color == null ? -1 : p.color;
         gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
         if (p.layer === -1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
         m = origM
@@ -968,7 +968,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     for (let i = 0; i < m.props.length; i++) {
         let origM = JSON.parse(JSON.stringify(m))
         let p = m.props[i];
-        let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
+        let pColor = p.color == null ? -1 : p.color;
         gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
         if (p.layer === 0) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
         m = origM
@@ -1003,7 +1003,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     for (let i = 0; i < m.props.length; i++) {
         let origM = JSON.parse(JSON.stringify(m))
         let p = m.props[i];
-        let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
+        let pColor = p.color == null ? -1 : p.color;
         gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
         if (p.layer === 1) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
         m = origM
@@ -1044,7 +1044,7 @@ const drawEntity = (baseColor, x, y, instance, ratio, alpha = 1, scale = 1, line
     for (let i = 0; i < m.props.length; i++) {
         let origM = JSON.parse(JSON.stringify(m))
         let p = m.props[i];
-        let pColor = p.color == null ? -1 : gameDraw.modifyColor(p.color, baseColor);
+        let pColor = p.color == null ? -1 : p.color;
         gameDraw.setColor(context, gameDraw.mixColors(pColor, render.status.getColor(), blend));
         if (p.layer === 2) drawProp(context, p, pColor, rot, xx, yy, drawSize, m, source);
         m = origM
