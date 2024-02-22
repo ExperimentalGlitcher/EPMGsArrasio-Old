@@ -945,16 +945,12 @@ Class.whirlwind = {
     CONTROLLERS: ["whirlwind"],
     HAS_NO_RECOIL: true,
     STAT_NAMES: statnames.whirlwind,
-    /*TURRETS: [
+    TURRETS: [
         {
             POSITION: [8, 0, 0, 0, 360, 1],
             TYPE: "whirlwindDeco"
         }
-    ],*/
-    PROPS: [{
-        POSITION: [0.4, 0, 0, 0, 1],
-        SHAPE: 6
-    }],
+    ],
     AI: {
         SPEED: 2, 
     }, 
