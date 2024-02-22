@@ -4143,7 +4143,7 @@ Class.riptide = {
         {
             POSITION: [18, 16, 0.75, 0, 0, 0, 0],
             PROPERTIES: {
-                SHOOT_SETTINGS: combineStats([g.basic, g.desmos, { size: 0.9, reload: 1.2 }]),
+                SHOOT_SETTINGS: combineStats([g.basic, g.desmos, g.pounder, { size: 0.9, reload: 1.2 }]),
                 TYPE: "magnetBullet"
             }
         },
