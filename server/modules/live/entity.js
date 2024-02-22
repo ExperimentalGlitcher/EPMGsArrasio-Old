@@ -612,6 +612,27 @@ class Gun {
     }
 }
 
+class Prop {
+    constructor(info) {
+        let pos = info.POSITION;
+        this.size = pos[0];
+        this.x = pos[1];
+        this.y = pos[2];
+        this.angle = pos[3] * Math.PI / 180;
+        this.layer = pos[4];
+        this.shape = info.SHAPE;
+        this.color = info.COLOR || -1;
+        this.fill = info.FILL == undefined ? true : false;
+        this.loop = info.LOOP == undefined ? true : false;
+        this.isAura = info.IS_AURA == undefined ? false : true;
+        this.ring = info.RING;
+        this.arclen = info.ARCLEN == undefined ? 1 : info.ARCLEN;
+        this.rpm = info.RPM;
+        this.specific = info.SPECIFIC == undefined ? 0 : info.SPECIFIC;
+        this.dip = info.DIP === undefined ? 1 : info.DIP;
+    }
+}
+
 class antiNaN {
     constructor (me) {
         this.me = me;
@@ -768,6 +789,7 @@ class Entity extends EventEmitter {
         this.shield = new HealthType(0, "dynamic");
         this.guns = [];
         this.turrets = [];
+        this.props = [];
         this.upgrades = [];
         this.settings = {};
         this.aiSettings = {};
@@ -1198,6 +1220,11 @@ class Entity extends EventEmitter {
                 newGuns.push(new Gun(this, set.GUNS[i]));
             }
             this.guns = newGuns;
+        }
+        if (set.PROPS != null) {
+            let newProps = [];
+            for (let def of set.PROPS) newProps.push(new Prop(def));
+            this.props = newProps;
         }
         if (set.MAX_CHILDREN != null) this.maxChildren = set.MAX_CHILDREN;
         if (set.RESET_CHILDREN) this.destroyAllChildren();
@@ -2257,4 +2284,4 @@ class Entity extends EventEmitter {
         return this.health.amount <= 0;
     }
 }
-module.exports = { init, StatusEffect, Gun, Entity };
+module.exports = { init, StatusEffect, Gun, Entity, Prop };
